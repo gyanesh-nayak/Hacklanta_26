@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>OpenLight · Vocal Pitch Battle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  --background:#fcf9f3; --surface:#fcf9f3; --card:#faf6ee; --container-low:#f6f3ed; --container:#f0eee8; --container-high:#ebe8e2;
+  --on-surface:#1c1c18; --ink:#181411; --espresso:#292524; --umber:#44403c; --on-variant:#5a4138;
+  --outline:#8e7166; --rule:#e7dfd5; --outline-variant:#e2bfb2;
+  --primary:#a33900; --primary-container:#cc4900; --on-primary:#fff; --primary-fixed:#ffdbce; --terracotta:#ea580c; --ochre:#c2410c;
+  --tertiary:#006947; --emerald:#10b981; --amber:#f59e0b; --error:#ba1a1a; --rubino:#ef4444;
+  --text-muted:#5a4138; --green:#006947; --cyan:#a33900;
+  --serif:'Playfair Display',Georgia,serif; --sans:'Plus Jakarta Sans',system-ui,sans-serif; --mono:'Space Grotesk',ui-monospace,monospace;
+  --shadow-1:0 4px 16px -2px rgba(24,20,17,.05),0 1px 3px 0 rgba(24,20,17,.03);
+  --shadow-2:0 8px 24px -4px rgba(234,88,12,.22),0 2px 6px -1px rgba(24,20,17,.06);
+  --shadow-3:0 20px 40px -8px rgba(24,20,17,.16);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--background);color:var(--on-surface);font-family:var(--sans);font-size:15px;line-height:22px;-webkit-font-smoothing:antialiased;min-height:100vh;
+  background-image:radial-gradient(720px 340px at 50% -40px,rgba(163,57,0,.06),transparent 70%)}
+::selection{background:var(--primary-fixed);color:#370e00}
+h1,h2,h3,h4,p{margin:0}
+.hidden{display:none!important}
+.ms{font-family:'Material Symbols Outlined';font-weight:400;font-style:normal;font-size:20px;line-height:1;display:inline-block;vertical-align:middle;letter-spacing:normal;text-transform:none;white-space:nowrap;font-feature-settings:'liga'}
+.eyebrow{font-family:var(--mono);font-size:12px;line-height:16px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--primary)}
+
+/* Header */
+.app-header{max-width:1440px;margin:0 auto;padding:24px 32px 8px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand-badge{display:flex;align-items:center;gap:12px}
+.brand-logo{width:44px;height:44px;border-radius:9999px;background:var(--container);display:inline-flex;align-items:center;justify-content:center;color:var(--primary);box-shadow:var(--shadow-1)}
+.brand-title{font-family:var(--serif);font-weight:700;font-size:28px;line-height:32px;letter-spacing:-.01em;color:var(--on-surface)}
+.brand-tag{display:block;font-family:var(--serif);font-style:italic;font-size:13px;line-height:16px;color:var(--primary)}
+.room-chip{display:inline-flex;align-items:center;gap:10px;padding:8px 16px;border-radius:9999px;background:var(--container);border:1px solid rgba(226,191,178,.4);box-shadow:var(--shadow-1);font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.room-chip strong{color:var(--tertiary);font-weight:700}
+.room-chip .dot{width:8px;height:8px;border-radius:9999px;background:var(--emerald);box-shadow:0 0 8px rgba(16,185,129,.6)}
+
+/* Views */
+.view-container{display:none;max-width:1440px;margin:0 auto;padding:16px 32px 48px}
+.view-container.active{display:block}
+.page-head{text-align:center;margin:12px auto 32px;max-width:760px}
+.page-head h2{font-family:var(--serif);font-weight:700;font-size:44px;line-height:52px;letter-spacing:-.02em;color:var(--on-surface);margin-top:6px}
+.page-head .aria{font-family:var(--serif);font-style:italic;font-size:22px;line-height:28px;color:var(--primary);margin-top:2px}
+.page-head p.lead{color:var(--on-variant);margin-top:12px}
+
+/* Panels */
+.panel{background:var(--container-low);border:1px solid var(--rule);border-radius:24px;padding:28px;box-shadow:var(--shadow-1)}
+.section-title{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--on-variant);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section-title .ms{color:var(--primary);font-size:18px}
+.muted{color:var(--text-muted)}
+.lobby-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:20px;align-items:start}
+
+/* Buttons */
+.btn-primary,.btn-secondary,.btn-quit{font-family:var(--sans);font-size:15px;font-weight:600;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:all .18s;min-height:48px;padding:0 24px}
+.btn-primary{width:100%;background:var(--primary);color:var(--on-primary);border:0;border-bottom:3px solid #7f2b00;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),var(--shadow-2)}
+.btn-primary:hover:not(:disabled){background:var(--primary-container);transform:translateY(-1px)}
+.btn-primary:active:not(:disabled){transform:translateY(1px);border-bottom-width:1px}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.btn-secondary{background:var(--container);color:var(--ink);border:1px solid var(--rule)}
+.btn-secondary:hover{background:var(--card);border-color:var(--terracotta)}
+.btn-quit{background:transparent;color:var(--espresso);border:1px solid var(--rule);min-height:44px;white-space:nowrap}
+.btn-quit:hover{border-color:var(--rubino);color:var(--error);background:#ffdad6}
+
+/* Mode cards */
+.mode-cards{display:flex;flex-direction:column;gap:12px}
+.mode-card{display:flex;gap:16px;padding:16px 18px;border-radius:16px;background:var(--card);border:1.5px solid var(--rule);cursor:pointer;transition:all .18s}
+.mode-card:hover{border-color:var(--terracotta)}
+.mode-card.selected{border-color:var(--terracotta);box-shadow:0 0 0 3px rgba(234,88,12,.15),var(--shadow-1);background:#fff}
+.mode-icon{width:44px;height:44px;flex:none;border-radius:12px;background:var(--primary-fixed);color:var(--primary);display:inline-flex;align-items:center;justify-content:center}
+.mode-info h4{font-family:var(--serif);font-size:19px;line-height:24px;font-weight:600;color:var(--ink)}
+.mode-info p{font-size:13px;line-height:18px;color:var(--on-variant);margin-top:4px}
+.kbd-hint{font-size:12px;color:var(--on-variant);margin-top:14px;display:flex;gap:8px;align-items:flex-start}
+.kbd-hint strong{font-family:var(--mono);letter-spacing:.06em;color:var(--ink)}
+
+/* QR panel */
+.qr-panel{display:flex;flex-direction:column;align-items:center;text-align:center}
+.qr-frame{background:var(--card);border:1px solid var(--rule);border-radius:16px;padding:14px;box-shadow:var(--shadow-1);margin:6px 0 14px}
+#qr-container{width:170px;height:170px}
+#qr-container img,#qr-container canvas{display:block}
+.qr-instructions{font-size:13px;color:var(--on-variant);max-width:300px}
+.lan-pill{margin-top:12px;padding:10px 14px;border-radius:12px;background:var(--container);font-size:12px;line-height:17px;word-break:break-all;color:var(--espresso);width:100%}
+.lan-pill strong,.lan-pill span{color:var(--primary)}
+.pstat-badge{display:inline-block;margin-top:8px;padding:4px 12px;border-radius:9999px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.pstat-badge.ok{background:#d8f5e8;color:var(--tertiary)}
+.pstat-badge.bad{background:#ffdad6;color:#93000a}
+.pstat-badge.wait{background:#fdeccb;color:#8a5200}
+.player-list-header{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--on-variant);padding:6px 2px;text-align:left}
+.players-container{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.empty-players{padding:16px;border:1.5px dashed var(--outline-variant);border-radius:12px;font-size:13px;color:var(--on-variant)}
+.player-item{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-radius:12px;background:var(--card);border:1px solid var(--rule);text-align:left}
+.p-left{display:flex;align-items:center;gap:10px}
+.player-avatar{width:12px;height:12px;border-radius:9999px;box-shadow:0 0 8px currentColor}
+.player-name{font-weight:600;color:var(--ink)}
+.player-tag{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;padding:3px 8px;border-radius:9999px;background:var(--ink);color:var(--background)}
+
+/* Songs */
+.songs-bar{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+.songs-bar h2{font-family:var(--serif);font-size:36px;line-height:44px;font-weight:600;letter-spacing:-.015em}
+.songs-bar p{color:var(--on-variant);margin-top:4px}
+.song-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.song-card{display:flex;flex-direction:column;justify-content:space-between;gap:18px;padding:20px;border-radius:16px;background:var(--card);border:1.5px solid var(--rule);box-shadow:var(--shadow-1);cursor:pointer;transition:all .18s}
+.song-card:hover{border-color:var(--terracotta);transform:translateY(-2px)}
+.song-card.selected{border-color:var(--terracotta);box-shadow:0 0 0 3px rgba(234,88,12,.15),var(--shadow-2);background:#fff}
+.song-header{display:flex;gap:14px}
+.song-icon{width:52px;height:52px;flex:none;border-radius:12px;background:var(--primary-fixed);color:var(--primary);display:flex;align-items:center;justify-content:center}
+.song-title{font-family:var(--serif);font-size:20px;line-height:26px;font-weight:600;color:var(--ink)}
+.song-artist{font-size:13px;color:var(--on-variant)}
+.song-badges{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.badge{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:9999px}
+.badge-easy{background:#d8f5e8;color:var(--tertiary)}
+.badge-medium{background:#fdeccb;color:#8a5200}
+.badge-hard{background:#ffdad6;color:#93000a}
+.badge-notes{background:var(--container);color:var(--umber)}
+.song-footer{display:flex;justify-content:space-between;align-items:center}
+.song-duration{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--umber);display:inline-flex;align-items:center;gap:6px}
+.song-footer .btn-secondary{min-height:36px}
+
+/* Battle */
+.battle-card{display:flex;flex-direction:column;gap:16px}
+.battle-top-bar{display:grid;grid-template-columns:1.1fr 1.4fr 1fr;gap:16px;align-items:stretch}
+.battle-top-bar>div{background:var(--container-low);border:1px solid var(--rule);border-radius:16px;padding:16px 20px;box-shadow:var(--shadow-1)}
+.singing-lyric-box{display:flex;gap:14px;align-items:center}
+.amber-accent-bar{width:4px;align-self:stretch;border-radius:4px;background:var(--terracotta)}
+.lyric-labels{display:flex;flex-direction:column;min-width:0}
+.lyric-title,.tuner-label,.mic-title{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--on-variant)}
+.active-lyric-word{font-family:var(--serif);font-size:30px;line-height:38px;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tuner-header{display:flex;justify-content:space-between;align-items:baseline}
+.tuner-pitch-name{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--ink);letter-spacing:.05em}
+.tuner-bar-wrapper{position:relative;height:10px;border-radius:9999px;margin:10px 0 6px;background:linear-gradient(90deg,var(--rubino),var(--amber) 30%,var(--emerald) 50%,var(--amber) 70%,var(--rubino));opacity:.85}
+.tuner-center-mark{position:absolute;left:50%;top:-4px;bottom:-4px;width:2px;background:var(--ink);transform:translateX(-50%)}
+.tuner-needle{position:absolute;left:50%;top:50%;width:16px;height:16px;border-radius:9999px;background:var(--card);border:3px solid var(--ink);transform:translate(-50%,-50%);transition:left .08s linear;box-shadow:0 2px 6px rgba(24,20,17,.3)}
+.tuner-labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;color:var(--umber)}
+.in-tune-label{color:var(--tertiary)}
+.tuner-subtext{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--primary);text-align:center;margin-top:6px}
+.mic-level-box{display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:auto auto;gap:6px 10px;align-content:center;align-items:center}
+.mic-icon{color:var(--primary);grid-row:1}
+.mic-title{grid-column:2 / 4;grid-row:1}
+.mic-progress-track{grid-column:1 / 3;grid-row:2;height:10px;border-radius:9999px;background:var(--container-high);overflow:hidden}
+.mic-progress-fill{height:100%;width:0;border-radius:9999px;background:linear-gradient(90deg,var(--emerald),var(--amber));box-shadow:0 0 12px rgba(16,185,129,.6);transition:width .06s linear}
+.mic-pct{grid-column:3;grid-row:2;font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:.05em;color:var(--ink)}
+.arena-mode-pill{align-self:center;display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:9999px;background:var(--ink);color:var(--background);font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin:0 auto}
+.canvas-wrapper{position:relative;height:clamp(300px,46vh,460px);border-radius:24px;overflow:hidden;background:var(--card);border:2px solid var(--rule);box-shadow:var(--shadow-1)}
+#battle-canvas{display:block;width:100%;height:100%}
+.hitline-badge{position:absolute;right:16px;bottom:12px;display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:9999px;background:rgba(251,248,242,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--rule);font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--umber)}
+.hitline-badge .dot{width:8px;height:8px;border-radius:9999px;background:var(--terracotta)}
+.battle-bottom-bar{display:flex;gap:16px;align-items:center;background:var(--container-low);border:1px solid var(--rule);border-radius:16px;padding:14px 20px}
+.lyrics-strip-wrapper{flex:1;min-width:0}
+.lyrics-strip{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 8px;max-height:84px;overflow:hidden;font-family:var(--sans);font-weight:600;font-size:18px;line-height:28px;text-align:center}
+.syllable-item{color:var(--espresso);opacity:.8;transition:color .12s}
+.syllable-item.passed{color:var(--umber);opacity:.5}
+.syllable-item.active{color:var(--ink);opacity:1;font-weight:800;box-shadow:inset 0 -3px 0 var(--terracotta)}
+.song-timeline-bar{height:4px;border-radius:9999px;background:var(--rule);margin-top:10px;overflow:hidden}
+.song-timeline-fill{height:100%;width:0;background:var(--terracotta);border-radius:9999px}
+
+/* Scoreboard */
+.scoreboard-wrapper{max-width:1100px;margin:0 auto}
+.winner-banner{text-align:center;margin:12px 0 32px}
+.crown-icon{width:64px;height:64px;border-radius:9999px;margin:0 auto 12px;background:var(--primary-fixed);color:var(--primary);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-2)}
+.crown-icon .ms{font-size:34px}
+.winner-title{font-family:var(--serif);font-weight:700;font-size:48px;line-height:56px;letter-spacing:-.02em}
+.winner-sub{font-family:var(--serif);font-style:italic;font-size:22px;line-height:28px;color:var(--primary);margin-top:4px}
+.gemini-coach{max-width:760px;margin:0 auto 24px;padding:20px 24px;border:1px solid var(--outline-variant);border-radius:18px;background:var(--container-low);box-shadow:var(--shadow-1)}
+.gemini-coach h3{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--primary)}
+.gemini-coach p{margin-top:8px;color:var(--on-variant);font-size:15px;line-height:24px}
+.podium-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.podium-card{background:var(--card);border:1.5px solid var(--rule);border-radius:24px;padding:24px;box-shadow:var(--shadow-1);text-align:center}
+.podium-card.rank-1{border-color:var(--terracotta);box-shadow:var(--shadow-2);background:#fff}
+.podium-rank{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.16em;color:var(--primary)}
+.podium-name{font-family:var(--serif);font-size:26px;line-height:32px;font-weight:600;margin:4px 0 14px}
+.grade-badge{width:72px;height:72px;margin:0 auto 12px;border-radius:9999px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:40px;font-weight:700;color:#fff;background:var(--umber)}
+.grade-S{background:var(--emerald);box-shadow:0 0 16px rgba(16,185,129,.6)}
+.grade-A{background:var(--tertiary)}
+.grade-B{background:var(--amber)}
+.grade-C{background:var(--ochre)}
+.grade-D{background:var(--rubino)}
+.podium-score{display:inline-block;font-family:var(--mono);font-weight:700;letter-spacing:.06em;font-size:15px;padding:6px 16px;border-radius:9999px;background:var(--ink);color:var(--emerald);margin-bottom:16px}
+.podium-stats{display:flex;flex-direction:column;gap:2px;text-align:left}
+.stat-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--rule);font-size:14px;color:var(--on-variant)}
+.stat-row span:last-child{font-family:var(--mono);font-weight:700;color:var(--ink)}
+.scoreboard-actions{display:flex;gap:12px;justify-content:center;margin-top:32px;flex-wrap:wrap}
+.scoreboard-actions .btn-primary{width:auto}
+
+/* Phone sender */
+#phone-view{max-width:480px;margin:32px auto;padding:20px;text-align:center}
+#phone-view .brand-badge{justify-content:center;margin-bottom:20px}
+.phone-input{background:var(--card);border:1.5px solid var(--rule);border-radius:8px;color:var(--ink);font-family:var(--sans);font-size:1.05rem;padding:12px 18px;width:80%;text-align:center;margin-bottom:18px}
+.phone-input:focus{outline:none;border-color:var(--terracotta);box-shadow:0 0 0 3px rgba(234,88,12,.15)}
+.phone-mic-btn{background:var(--primary);color:#fff;font-family:var(--sans);font-size:1.05rem;font-weight:700;padding:14px 30px;border:0;border-bottom:3px solid #7f2b00;border-radius:8px;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),var(--shadow-2);display:inline-flex;gap:8px;align-items:center}
+.phone-mic-btn:active{transform:translateY(1px)}
+.phone-mic-btn:disabled{opacity:.5}
+
+@media(max-width:1000px){
+  .lobby-grid{grid-template-columns:1fr}
+  .battle-top-bar{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .app-header{padding:16px}
+  .view-container{padding:12px 16px 32px}
+  .page-head h2{font-size:36px;line-height:42px}
+  .winner-title{font-size:34px;line-height:40px}
+  .brand-tag{display:none}
+  .battle-bottom-bar{flex-direction:column;align-items:stretch}
+}
+</style>
+</head>
+<body>
+
+<!-- PHONE SENDER INTERFACE (?phone=CODE) -->
+<div id="phone-view" class="hidden">
+  <div class="brand-badge">
+    <span class="brand-logo"><span class="ms">mic</span></span>
+    <div><h1 class="brand-title">OpenLight</h1><span class="brand-tag">“The voice never lies.”</span></div>
+  </div>
+  <div class="panel" style="padding:30px 20px;">
+    <h2 style="font-family:var(--serif);font-size:26px;line-height:32px;font-weight:600;margin-bottom:8px;">Mobile Microphone</h2>
+    <p class="muted" style="font-size:13px;margin-bottom:20px;">Connect your phone directly to the arena with low-latency WebRTC.</p>
+    <div><input type="text" id="phone-player-name" class="phone-input" placeholder="Enter your name" maxlength="15"></div>
+    <div><button id="phone-connect-btn" class="phone-mic-btn"><span class="ms">mic</span> Share my mic</button></div>
+    <div id="phone-status-msg" class="muted" style="margin-top:20px;font-size:14px;">Ready to connect.</div>
+  </div>
+</div>
+
+<div id="host-app">
+  <header class="app-header">
+    <div class="brand-badge">
+      <span class="brand-logo"><span class="ms">graphic_eq</span></span>
+      <div><h1 class="brand-title">OpenLight</h1><span class="brand-tag">“The voice never lies.”</span></div>
+    </div>
+    <div class="room-chip" id="room-chip">
+      <span class="dot"></span>
+      <span>Peer code <strong id="header-room-id">1983</strong></span>
+    </div>
+  </header>
+
+  <!-- VIEW 1: LOBBY -->
+  <main id="view-lobby" class="view-container active">
+    <div class="page-head">
+      <span class="eyebrow">Instant vocal battle • Live pitch tracking</span>
+      <h2>Join the Lobby</h2>
+      <p class="aria">Two microphones, one melody.</p>
+    </div>
+    <div class="lobby-grid">
+      <div class="panel">
+        <h3 class="section-title"><span class="ms">swords</span> 1. Select game mode</h3>
+        <div class="mode-cards">
+          <div class="mode-card selected" data-mode="popcorn" id="mode-popcorn">
+            <span class="mode-icon"><span class="ms">swap_horiz</span></span>
+            <div class="mode-info">
+              <h4>Popcorn Singing (2-player turn split)</h4>
+              <p>Sing half &amp; half! Player 1 takes the first half, Player 2 the second, with a 3…2…1 handover. Solo? One player sings the whole song.</p>
+            </div>
+          </div>
+          <div class="mode-card" data-mode="mog_battle" id="mode-mog">
+            <span class="mode-icon"><span class="ms">swords</span></span>
+            <div class="mode-info">
+              <h4>Concurrent “Mog” voice battle</h4>
+              <p>Simultaneous pitch duel! Sing at the same time and watch both cursors on the hit line. Highest score wins.</p>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="section-title" style="margin-top:28px;"><span class="ms">mic</span> Microphone inputs</h3>
+        <p class="muted" style="font-size:13px;margin-bottom:12px;">Use your laptop mic for instant play, or scan the code with phones.</p>
+        <button id="btn-toggle-laptop-mic" class="btn-secondary" style="width:100%;">
+          <span id="laptop-mic-icon" class="ms">mic</span> <span id="laptop-mic-text">Enable Laptop Mic</span>
+        </button>
+        <p class="kbd-hint"><span class="ms" style="font-size:18px;color:var(--primary)">piano</span>
+          <span>No mic handy? Hold <strong>A W S E D F T G Y H U J K</strong> (C4–C5) to test.</span></p>
+      </div>
+
+      <div class="panel qr-panel">
+        <h3 class="section-title" style="align-self:flex-start;"><span class="ms">smartphone</span> 2. Pair mobile devices</h3>
+        <div class="qr-frame"><div id="qr-container" aria-label="Dynamic phone pairing QR code"></div></div>
+        <p class="qr-instructions">Scan with your <strong>iPhone</strong> or <strong>Android</strong> camera to stream low-latency audio.</p>
+        <div class="lan-pill" id="peer-url-pill">Finding the secure phone link…</div>
+        <div id="peer-status-pill" class="pstat-badge ok">● Peer Ready (Room 1983)</div>
+
+        <div style="width:100%;margin-top:18px;">
+          <div class="player-list-header">
+            <span>Connected devices (<span id="player-count">0</span>)</span>
+            <span style="color:var(--tertiary);">● Live</span>
+          </div>
+          <div class="players-container" id="players-list">
+            <div class="empty-players">Waiting for phones or laptop mic…</div>
+          </div>
+        </div>
+        <button id="btn-to-song-select" class="btn-primary" disabled="" style="margin-top:18px;">Select song &amp; start <span class="ms">arrow_forward</span></button>
+      </div>
+    </div>
+  </main>
+
+  <!-- VIEW 2: SONGS -->
+  <main id="view-songs" class="view-container">
+    <div class="songs-bar">
+      <div>
+        <span class="eyebrow">Choose a song</span>
+        <h2>Canzoniere</h2>
+        <p>Choose a calibrated track. Audio plays through your laptop speakers.</p>
+      </div>
+      <div style="display:flex;gap:12px;">
+        <button id="btn-back-to-lobby" class="btn-secondary"><span class="ms">arrow_back</span> Back to lobby</button>
+        <button id="btn-launch-battle" class="btn-primary" style="width:auto;" disabled=""><span class="ms">mic</span> Sing now</button>
+      </div>
+    </div>
+    <div class="song-grid" id="song-cards-container"></div>
+  </main>
+
+  <!-- VIEW 3: BATTLE -->
+  <main id="view-battle" class="view-container">
+    <audio id="bg-audio" preload="auto"></audio>
+    <div class="battle-card">
+      <div class="battle-top-bar">
+        <div class="singing-lyric-box">
+          <div class="amber-accent-bar"></div>
+          <div class="lyric-labels">
+            <span class="lyric-title">Singing lyric</span>
+            <span class="active-lyric-word" id="arena-active-lyric">“…”</span>
+          </div>
+        </div>
+        <div class="tuner-container">
+          <div class="tuner-header">
+            <span class="tuner-label">Pitch</span>
+            <span class="tuner-pitch-name" id="arena-pitch-name">--</span>
+          </div>
+          <div class="tuner-bar-wrapper">
+            <div class="tuner-center-mark"></div>
+            <div class="tuner-needle" id="arena-tuner-needle"></div>
+          </div>
+          <div class="tuner-labels"><span>FLAT −50¢</span><span class="in-tune-label">IN TUNE</span><span>+50¢ SHARP</span></div>
+          <div class="tuner-subtext" id="arena-tuner-subtext">Sing into microphone</div>
+        </div>
+        <div class="mic-level-box">
+          <span class="mic-icon ms">graphic_eq</span>
+          <span class="mic-title">Mic level</span>
+          <div class="mic-progress-track"><div class="mic-progress-fill" id="arena-mic-bar"></div></div>
+          <span class="mic-pct" id="arena-mic-pct">0%</span>
+        </div>
+      </div>
+
+      <div class="arena-mode-pill" id="arena-turn-pill"><span id="arena-turn-indicator">Popcorn Singing</span></div>
+
+      <div class="canvas-wrapper">
+        <canvas id="battle-canvas" width="0" height="0"></canvas>
+        <div class="hitline-badge"><span class="dot"></span><span>Hit line • ±75¢ tolerance • octave folded</span></div>
+      </div>
+
+      <div class="battle-bottom-bar">
+        <div class="lyrics-strip-wrapper">
+          <div class="lyrics-strip" id="arena-lyrics-strip"></div>
+          <div class="song-timeline-bar"><div class="song-timeline-fill" id="arena-song-progress"></div></div>
+        </div>
+        <button id="btn-quit-song" class="btn-quit"><span class="ms">logout</span> Quit song</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- VIEW 4: SCOREBOARD -->
+  <main id="view-scoreboard" class="view-container">
+    <div class="scoreboard-wrapper">
+      <div class="winner-banner">
+        <div class="crown-icon"><span class="ms">emoji_events</span></div>
+        <h2 class="winner-title" id="winner-banner-title">WINNER: Player 1</h2>
+        <p class="winner-sub" id="winner-banner-sub">Carried the song with surgical pitch accuracy!</p>
+      </div>
+      <section class="gemini-coach" aria-labelledby="gemini-coach-title">
+        <h3 id="gemini-coach-title">Gemini Coach</h3>
+        <p id="gemini-commentary" aria-live="polite">Gemini will share a round recap here.</p>
+      </section>
+      <div class="podium-grid" id="scoreboard-podium"></div>
+      <div class="scoreboard-actions">
+        <button id="btn-play-again" class="btn-primary"><span class="ms">replay</span> Play again</button>
+        <button id="btn-choose-song" class="btn-secondary" style="min-height:48px;"><span class="ms">library_music</span> Choose another song</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- QR Code & PeerJS Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script>
+    // ========================================================
+    // ZERO-FASTAPI PITCHBATTLE CLIENT ENGINE
+    // Pure WebRTC Peer-to-Peer Audio Streaming + Web Audio YIN
+    // ========================================================
+    const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    function midiToNoteName(midi) {
+      if (!midi) return "--";
+      const rounded = Math.round(midi);
+      return `${NOTE_NAMES[rounded % 12]}${Math.floor(rounded / 12) - 1}`;
+    }
+
+    const PEER_PREFIX = 'pitchbattle-v3-';
+    const keepAliveAudios = [];
+
+    // App State
+    const state = {
+      peerCode: '',
+      peer: null,
+      mode: 'popcorn', // 'popcorn' or 'mog_battle'
+      songs: [],
+      selectedSong: null,
+      songData: null,
+      
+      // Players list: each has { id, name, type: 'laptop'|'phone', analyser, stream, score:0, combo:0, maxCombo:0, hitsPerfect:0, hitsGood:0, misses:0, totalNotes:0, sungMidi:null, curY:undefined, isSinging:false, rms:0 }
+      players: [],
+      laptopPlayer: null,
+      keyboardMidi: null,
+      
+      // Audio playback
+      audioContext: null,
+      audioElement: document.getElementById('bg-audio'),
+      synthNodes: [],
+      isRunning: false,
+      
+      // Canvas geometry
+      pxPerSec: 160,
+      hitLineX: 150,
+      particles: [],
+      
+      // Popcorn division
+      popcorn: {
+        splitTime: 0,
+        h1End: 0,
+        h2Start: 0,
+        activeTurnPlayerIdx: 0,
+        p1Name: 'Player 1',
+        p2Name: 'Player 2'
+      }
+    };
+
+    const getAC = () => state.audioContext = state.audioContext || new (window.AudioContext || window.webkitAudioContext)();
+
+    // ========================================================
+    // YIN PITCH DETECTOR (Web Audio Float32Array)
+    // ========================================================
+    function yin(buf, sr) {
+      let r = 0;
+      for (const x of buf) r += x * x;
+      if (Math.sqrt(r / buf.length) < 0.005) return -1;
+      const n = buf.length >> 1, d = new Float32Array(n), maxT = Math.min(n - 1, sr / 80 | 0), minT = sr / 1000 | 0;
+      for (let t = 1; t <= maxT; t++) {
+        let s = 0;
+        for (let i = 0; i < n; i += 2) {
+          const v = buf[i] - buf[i + t];
+          s += v * v;
+        }
+        d[t] = s;
+      }
+      let run = 0;
+      d[0] = 1;
+      for (let t = 1; t <= maxT; t++) {
+        run += d[t];
+        d[t] = d[t] * t / run;
+      }
+      for (let t = Math.max(2, minT); t < maxT; t++) {
+        if (d[t] < 0.15) {
+          while (t + 1 < maxT && d[t + 1] < d[t]) t++;
+          const a = d[t - 1], b = d[t], c = d[t + 1], den = a - 2 * b + c;
+          return sr / (t + (den ? (a - c) / (2 * den) : 0));
+        }
+      }
+      return -1;
+    }
+
+    // Helper: create Web Audio Analyser for any MediaStream
+    function createStreamAnalyser(stream) {
+      const ac = getAC();
+      const analyser = ac.createAnalyser();
+      analyser.fftSize = 2048;
+      analyser.smoothingTimeConstant = 0.0;
+      analyser.buffer = new Float32Array(analyser.fftSize);
+      
+      const source = ac.createMediaStreamSource(stream);
+      const sink = ac.createGain();
+      sink.gain.value = 0; // Silent sink to pull frames continuously without feedback
+      source.connect(analyser);
+      analyser.connect(sink);
+      sink.connect(ac.destination);
+      return analyser;
+    }
+
+    // Keyboard support
+    const KEY_MAP = { a: 60, w: 61, s: 62, e: 63, d: 64, f: 65, t: 66, g: 67, y: 68, h: 69, u: 70, j: 71, k: 72 };
+    window.addEventListener('keydown', e => {
+      if (!e.repeat && KEY_MAP[e.key.toLowerCase()]) {
+        state.keyboardMidi = KEY_MAP[e.key.toLowerCase()];
+      }
+    });
+    window.addEventListener('keyup', e => {
+      if (KEY_MAP[e.key.toLowerCase()]) {
+        state.keyboardMidi = null;
+      }
+    });
+
+    // ========================================================
+    // CHECK IF THIS DEVICE IS A PHONE SENDER (?phone=CODE)
+    // ========================================================
+    const phoneJoinCode = new URLSearchParams(window.location.search).get('phone');
+    if (phoneJoinCode) {
+      document.getElementById('host-app').classList.add('hidden');
+      document.getElementById('phone-view').classList.remove('hidden');
+      
+      const btn = document.getElementById('phone-connect-btn');
+      const nameInput = document.getElementById('phone-player-name');
+      const statusMsg = document.getElementById('phone-status-msg');
+      let phoneStream = null;
+      let phonePeer = null;
+      let phoneCall = null;
+
+      function cleanupPhoneConnection() {
+        if (phoneCall) {
+          phoneCall.close();
+          phoneCall = null;
+        }
+        if (phonePeer) {
+          phonePeer.destroy();
+          phonePeer = null;
+        }
+        if (phoneStream) {
+          phoneStream.getTracks().forEach(track => track.stop());
+          phoneStream = null;
+        }
+      }
+
+      window.addEventListener('pagehide', cleanupPhoneConnection, { once: true });
+
+      btn.onclick = async () => {
+        const pName = nameInput.value.trim() || 'Phone ' + Math.floor(Math.random() * 900 + 100);
+        statusMsg.textContent = 'Requesting microphone permission...';
+        btn.disabled = true;
+
+        try {
+          phoneStream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              echoCancellation: false,
+              noiseSuppression: false,
+              autoGainControl: false
+            }
+          });
+
+          try {
+            if (navigator.wakeLock) await navigator.wakeLock.request('screen');
+          } catch (e) {}
+
+          statusMsg.textContent = 'Connecting to laptop arena...';
+          const p = new Peer();
+          phonePeer = p;
+
+          p.on('open', () => {
+            const call = p.call(PEER_PREFIX + phoneJoinCode, phoneStream, { metadata: { name: pName } });
+            phoneCall = call;
+            statusMsg.innerHTML = `<span style="color:#006947; font-weight:700;">Connected as "${pName}"!</span><br>Sing loudly into your phone mic. Keep this screen open!`;
+            
+            call.on('close', () => {
+              phoneCall = null;
+              if (phoneStream) {
+                phoneStream.getTracks().forEach(track => track.stop());
+                phoneStream = null;
+              }
+              if (phonePeer) {
+                phonePeer.destroy();
+                phonePeer = null;
+              }
+              statusMsg.textContent = 'Disconnected from host.';
+              btn.disabled = false;
+            });
+          });
+
+          p.on('error', err => {
+            statusMsg.textContent = err.type === 'peer-unavailable'
+              ? 'Arena not found! Make sure host is running and rescan QR.'
+              : 'WebRTC error: ' + err.type;
+            cleanupPhoneConnection();
+            btn.disabled = false;
+          });
+
+        } catch (err) {
+          cleanupPhoneConnection();
+          statusMsg.textContent = 'Microphone error: ' + err.message + ' (Note: Phone must be on HTTPS or localhost to allow mic)';
+          btn.disabled = false;
+        }
+      };
+    } else {
+      // ======================================================
+      // HOST INITIALIZATION
+      // ======================================================
+      window.addEventListener('DOMContentLoaded', async () => {
+        setupCanvasSize();
+        window.addEventListener('resize', setupCanvasSize);
+        setupHostUI();
+        initHostPeer();
+        await loadSongCatalog();
+      });
+    }
+
+    // ========================================================
+    // HOST PEER SETUP (Receive incoming phone audio streams)
+    // ========================================================
+    function initHostPeer() {
+      // 4-digit room code
+      state.peerCode = String(1000 + Math.floor(Math.random() * 9000));
+      document.getElementById('header-room-id').textContent = state.peerCode;
+
+      // Render QR helper
+      function renderQR(targetUrl) {
+        const qrContainer = document.getElementById('qr-container');
+        qrContainer.innerHTML = '';
+        new QRCode(qrContainer, {
+          text: targetUrl,
+          width: 170,
+          height: 170,
+          colorDark: "#181411",
+          colorLight: "#faf6ee",
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      }
+
+      // Use the current host while waiting for the server's LAN or ngrok address.
+      let phoneUrl = window.location.protocol.startsWith('http')
+        ? `${window.location.origin}/?phone=${state.peerCode}`
+        : '';
+
+      const pill = document.getElementById('peer-url-pill');
+      const statPill = document.getElementById('peer-status-pill');
+      pill.innerHTML = phoneUrl
+        ? `Phone URL: <strong style="color:var(--cyan);">${phoneUrl}</strong>`
+        : 'Finding the secure phone link…';
+      if (phoneUrl) renderQR(phoneUrl);
+
+      // Fetch the current server address and prefer its public ngrok HTTPS link.
+      async function pollNetworkInfo() {
+        try {
+          const res = await fetch('/api/info', { cache: 'no-store' });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.public_url) {
+              const tunnelPhoneUrl = `${data.public_url}/?phone=${state.peerCode}`;
+              pill.innerHTML = `<strong>Public HTTPS phone link</strong><br><span style="color:var(--cyan); font-weight:700;">${tunnelPhoneUrl}</span>`;
+              renderQR(tunnelPhoneUrl);
+              return;
+            } else if (data.lan_ip && data.port) {
+              const lanPhoneUrl = `http://${data.lan_ip}:${data.port}/?phone=${state.peerCode}`;
+              pill.innerHTML = `<strong>Same Wi-Fi:</strong> <span style="color:var(--cyan); font-weight:700;">${lanPhoneUrl}</span> (Waiting for ngrok…)`;
+              renderQR(lanPhoneUrl);
+            }
+          }
+        } catch (e) {
+          // Keep the current page link and retry while the server starts.
+        }
+        setTimeout(pollNetworkInfo, 2000);
+      }
+      pollNetworkInfo();
+
+      state.peer = new Peer(PEER_PREFIX + state.peerCode);
+
+      state.peer.on('open', () => {
+        statPill.className = 'pstat-badge ok';
+        statPill.textContent = '● Peer Ready (Room ' + state.peerCode + ')';
+      });
+
+      state.peer.on('call', call => {
+        call.answer();
+        let connected = false;
+
+        call.on('stream', stream => {
+          if (connected) return;
+          connected = true;
+
+          const phoneName = (call.metadata && call.metadata.name) || ('Player ' + (state.players.length + 1));
+          
+          // Browser audio element keeps stream alive
+          const audioElem = new Audio();
+          audioElem.srcObject = stream;
+          audioElem.muted = true;
+          audioElem.play().catch(() => {});
+          keepAliveAudios.push(audioElem);
+
+          const analyser = createStreamAnalyser(stream);
+
+          const player = {
+            id: call.peer,
+            name: phoneName,
+            type: 'phone',
+            stream: stream,
+            analyser: analyser,
+            score: 0,
+            combo: 0,
+            maxCombo: 0,
+            hitsPerfect: 0,
+            hitsGood: 0,
+            misses: 0,
+            totalNotes: 0,
+            sungMidi: null,
+            curY: undefined,
+            isSinging: false,
+            rms: 0
+          };
+
+          state.players.push(player);
+          renderPlayersList();
+        });
+
+        call.on('close', () => {
+          state.players = state.players.filter(p => p.id !== call.peer);
+          renderPlayersList();
+        });
+      });
+
+      state.peer.on('error', err => {
+        statPill.className = 'pstat-badge bad';
+        statPill.textContent = 'Peer error: ' + err.type;
+      });
+    }
+
+    // Toggle Laptop Mic
+    async function toggleLaptopMic() {
+      const btn = document.getElementById('btn-toggle-laptop-mic');
+      const icon = document.getElementById('laptop-mic-icon');
+      const text = document.getElementById('laptop-mic-text');
+
+      if (state.laptopPlayer) {
+        // Turn off
+        if (state.laptopPlayer.stream) {
+          state.laptopPlayer.stream.getTracks().forEach(t => t.stop());
+        }
+        state.players = state.players.filter(p => p !== state.laptopPlayer);
+        state.laptopPlayer = null;
+        icon.textContent = 'mic';
+        text.textContent = 'Enable Laptop Mic';
+        renderPlayersList();
+        return;
+      }
+
+      try {
+        const ac = getAC();
+        await ac.resume();
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: { echoCancellation: true, noiseSuppression: false, autoGainControl: true }
+        });
+
+        const analyser = createStreamAnalyser(stream);
+        state.laptopPlayer = {
+          id: 'laptop-host',
+          name: 'Host Laptop',
+          type: 'laptop',
+          stream: stream,
+          analyser: analyser,
+          score: 0,
+          combo: 0,
+          maxCombo: 0,
+          hitsPerfect: 0,
+          hitsGood: 0,
+          misses: 0,
+          totalNotes: 0,
+          sungMidi: null,
+          curY: undefined,
+          isSinging: false,
+          rms: 0
+        };
+
+        state.players.unshift(state.laptopPlayer);
+        icon.textContent = 'check_circle';
+        text.textContent = 'Laptop Mic Active';
+        renderPlayersList();
+      } catch (err) {
+        alert('Could not enable laptop microphone: ' + err.message);
+      }
+    }
+
+    function renderPlayersList() {
+      const listEl = document.getElementById('players-list');
+      const countEl = document.getElementById('player-count');
+      const btnSelect = document.getElementById('btn-to-song-select');
+
+      countEl.textContent = state.players.length;
+
+      if (state.players.length === 0) {
+        listEl.innerHTML = '<div class="empty-players">Waiting for phones or laptop mic...</div>';
+        btnSelect.disabled = true;
+        return;
+      }
+
+      btnSelect.disabled = false;
+      const colors = ["#ea580c", "#10b981", "#f59e0b", "#181411", "#c2410c", "#44403c"];
+
+      let html = '';
+      state.players.forEach((p, idx) => {
+        const color = colors[idx % colors.length];
+        const isHost = p.type === 'laptop';
+        html += `
+          <div class="player-item">
+            <div class="p-left">
+              <span class="player-avatar" style="background: ${color}; color: ${color};"></span>
+              <span class="player-name">${p.name} ${isHost ? '(Laptop Mic)' : ''}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="player-tag">${isHost ? 'HOST' : 'PHONE'}</span>
+            </div>
+          </div>
+        `;
+      });
+
+      listEl.innerHTML = html;
+    }
+
+    // ========================================================
+    // UI SETUP & VIEW SWITCHING
+    // ========================================================
+    function switchView(viewId) {
+      document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById(viewId);
+      if (target) {
+        target.classList.add('active');
+        if (viewId === 'view-battle') {
+          setupCanvasSize();
+        }
+      }
+    }
+
+    function setupHostUI() {
+      // Mode selection
+      const modeCards = document.querySelectorAll('.mode-card');
+      modeCards.forEach(card => {
+        card.addEventListener('click', () => {
+          modeCards.forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          state.mode = card.getAttribute('data-mode');
+        });
+      });
+
+      document.getElementById('btn-toggle-laptop-mic').onclick = toggleLaptopMic;
+      document.getElementById('btn-to-song-select').onclick = () => switchView('view-songs');
+      document.getElementById('btn-back-to-lobby').onclick = () => switchView('view-lobby');
+      document.getElementById('btn-launch-battle').onclick = startBattle;
+      document.getElementById('btn-quit-song').onclick = stopBattle;
+      document.getElementById('btn-play-again').onclick = startBattle;
+      document.getElementById('btn-choose-song').onclick = () => switchView('view-songs');
+    }
+
+    // ========================================================
+    // LOAD SONG CATALOG
+    // ========================================================
+    async function loadSongCatalog() {
+      try {
+        const res = await fetch('songs/index.json');
+        state.songs = await res.json();
+        renderSongCatalog();
+      } catch (err) {
+        console.error('Failed to load songs/index.json:', err);
+      }
+    }
+
+    function renderSongCatalog() {
+      const container = document.getElementById('song-cards-container');
+      container.innerHTML = '';
+
+      state.songs.forEach((song, idx) => {
+        const card = document.createElement('div');
+        card.className = `song-card ${idx === 0 ? 'selected' : ''}`;
+        card.id = `song-card-${song.id}`;
+
+        const dur = song.duration || song.duration_sec || 0;
+        const notesCount = song.total_notes || song.notes_count || 0;
+        const diff = song.difficulty || (notesCount > 350 ? 'Hard' : (notesCount > 100 ? 'Medium' : 'Easy'));
+        const diffClass = diff === 'Easy' ? 'badge-easy' : (diff === 'Hard' ? 'badge-hard' : 'badge-medium');
+        const minutes = Math.floor(dur / 60);
+        const seconds = Math.floor(dur % 60).toString().padStart(2, '0');
+
+        card.innerHTML = `
+          <div>
+            <div class="song-header">
+              <div class="song-icon"><span class="ms">music_note</span></div>
+              <div>
+                <div class="song-title">${song.title}</div>
+                <div class="song-artist">${song.artist}</div>
+                <div class="song-badges">
+                  <span class="badge ${diffClass}">${diff}</span>
+                  <span class="badge badge-notes">${notesCount} Notes</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="song-footer">
+            <span class="song-duration"><span class="ms" style="font-size:18px">schedule</span> ${minutes}:${seconds}</span>
+            <button class="btn-secondary" style="padding: 6px 14px; font-size: 12px;">Select</button>
+          </div>
+        `;
+
+        card.addEventListener('click', () => {
+          document.querySelectorAll('.song-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          state.selectedSong = song;
+          document.getElementById('btn-launch-battle').disabled = false;
+        });
+
+        container.appendChild(card);
+      });
+
+      if (state.songs.length > 0) {
+        state.selectedSong = state.songs[0];
+        document.getElementById('btn-launch-battle').disabled = false;
+      }
+    }
+
+    // ========================================================
+    // BATTLE INITIALIZATION & POPCORN COMPUTATION
+    // ========================================================
+    async function startBattle() {
+      if (!state.selectedSong) return;
+
+      const ac = getAC();
+      await ac.resume();
+
+      // Load song JSON chart
+      try {
+        const jsonPath = state.selectedSong.json_url || `songs/${state.selectedSong.id}.json`;
+        const res = await fetch(jsonPath);
+        state.songData = await res.json();
+      } catch (err) {
+        alert('Could not load song chart: ' + err.message);
+        return;
+      }
+
+      // Reset all player game statistics
+      state.players.forEach(p => {
+        p.score = 0;
+        p.combo = 0;
+        p.maxCombo = 0;
+        p.hitsPerfect = 0;
+        p.hitsGood = 0;
+        p.misses = 0;
+        p.totalNotes = 0;
+        p.sungMidi = null;
+        p.curY = undefined;
+        p.isSinging = false;
+        p.rms = 0;
+      });
+
+      // Compute Popcorn Half-and-Half division
+      const notes = state.songData.notes || [];
+      const numPlayers = state.players.length;
+
+      if (numPlayers > 1) {
+        const midIdx = Math.floor(notes.length / 2);
+        const h1End = notes[midIdx - 1] ? notes[midIdx - 1].end : 0;
+        const h2Start = notes[midIdx] ? notes[midIdx].start : h1End;
+        const splitTime = (h1End + h2Start) / 2;
+
+        notes.forEach((n, idx) => {
+          n.half_idx = idx < midIdx ? 0 : 1;
+        });
+
+        state.popcorn = {
+          splitTime: splitTime,
+          h1End: h1End,
+          h2Start: h2Start,
+          activeTurnPlayerIdx: 0,
+          p1Name: state.players[0] ? state.players[0].name : 'Player 1',
+          p2Name: state.players[1] ? state.players[1].name : 'Player 2'
+        };
+      } else {
+        // Solo mode: 1 player sings full song
+        notes.forEach(n => { n.half_idx = 0; });
+        state.popcorn = {
+          splitTime: 999999,
+          h1End: 999999,
+          h2Start: 999999,
+          activeTurnPlayerIdx: 0,
+          p1Name: state.players[0] ? state.players[0].name : 'Player 1',
+          p2Name: ''
+        };
+      }
+
+      renderBottomLyricsStrip();
+      switchView('view-battle');
+
+      // Audio setup
+      const audioUrl = state.selectedSong.audio_url || `songs/${state.selectedSong.audio_file}`;
+      state.audioElement.src = audioUrl;
+      state.audioElement.currentTime = 0;
+
+      try {
+        await state.audioElement.play();
+      } catch (e) {
+        console.warn('Playback play() requires gesture, attempting resume:', e);
+      }
+
+      state.audioElement.onended = () => {
+        stopBattle();
+      };
+
+      state.isRunning = true;
+      requestAnimationFrame(gameLoop);
+    }
+
+    function stopBattle() {
+      state.isRunning = false;
+      state.audioElement.pause();
+      finishBattle();
+    }
+
+    function finishBattle() {
+      switchView('view-scoreboard');
+      const isSolo = state.players.length <= 1;
+
+      // Sort by score
+      const ranked = [...state.players].sort((a, b) => b.score - a.score);
+      const winner = ranked[0] ? ranked[0].name : 'Nobody';
+
+      document.getElementById('winner-banner-title').textContent = isSolo ? 'Song Complete!' : `Winner: ${winner}`;
+      document.getElementById('winner-banner-sub').textContent = state.mode === 'popcorn'
+        ? (isSolo ? 'Great singing performance!' : 'Mastered the half-and-half transition with surgical accuracy!')
+        : 'Completely mogged the voice duel with pitch dominance!';
+
+      const podium = document.getElementById('scoreboard-podium');
+      podium.innerHTML = '';
+      const commentaryPlayers = [];
+
+      ranked.forEach((p, idx) => {
+        const total = p.hitsPerfect + p.hitsGood + p.misses;
+        const acc = total > 0 ? Math.round(100 * (p.hitsPerfect + p.hitsGood) / total) : 0;
+        const grade = acc >= 90 ? 'S' : acc >= 80 ? 'A' : acc >= 65 ? 'B' : acc >= 50 ? 'C' : 'D';
+        commentaryPlayers.push({
+          name: p.name,
+          score: p.score,
+          accuracy_pct: acc,
+          perfect_hits: p.hitsPerfect,
+          good_hits: p.hitsGood,
+          misses: p.misses,
+          max_streak: p.maxCombo,
+          grade
+        });
+
+        const card = document.createElement('div');
+        card.className = `podium-card rank-${idx + 1}`;
+        card.innerHTML = `
+          <div class="podium-rank">#${idx + 1} PLACE</div>
+          <div class="podium-name">${p.name}</div>
+          <div class="grade-badge grade-${grade}">${grade}</div>
+          <div class="podium-score">${p.score.toLocaleString()} PTS</div>
+          <div class="podium-stats">
+            <div class="stat-row"><span>Accuracy</span><span>${acc}%</span></div>
+            <div class="stat-row"><span>Perfect Hits</span><span>${p.hitsPerfect}</span></div>
+            <div class="stat-row"><span>Good Hits</span><span>${p.hitsGood}</span></div>
+            <div class="stat-row"><span>Misses</span><span>${p.misses}</span></div>
+            <div class="stat-row"><span>Max Streak</span><span>${p.maxCombo}x</span></div>
+          </div>
+        `;
+        podium.appendChild(card);
+      });
+
+      loadGeminiCommentary({
+        song_title: state.selectedSong ? state.selectedSong.title : 'Unknown song',
+        mode: state.mode,
+        players: commentaryPlayers
+      });
+    }
+
+    async function loadGeminiCommentary(roundSummary) {
+      const output = document.getElementById('gemini-commentary');
+      output.textContent = 'Gemini is reviewing the round…';
+      try {
+        const response = await fetch('/api/battle-commentary', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(roundSummary)
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(result.detail || 'Gemini commentary is unavailable right now.');
+        }
+        output.textContent = result.commentary;
+      } catch (error) {
+        output.textContent = error.message || 'Gemini commentary is unavailable. Check the server configuration and try again.';
+      }
+    }
+
+    // ========================================================
+    // LYRICS STRIP
+    // ========================================================
+    function renderBottomLyricsStrip() {
+      const strip = document.getElementById('arena-lyrics-strip');
+      strip.innerHTML = '';
+      if (!state.songData || !state.songData.notes) return;
+
+      state.songData.notes.forEach((note, idx) => {
+        const span = document.createElement('span');
+        span.id = `syl-${idx}`;
+        span.className = 'syllable-item';
+        span.textContent = note.text || note.lyric || '';
+        strip.appendChild(span);
+      });
+    }
+
+    // ========================================================
+    // 60 FPS BATTLE GAME LOOP (Runs entirely client-side!)
+    // ========================================================
+    const canvas = document.getElementById('battle-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function setupCanvasSize() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+    }
+
+    function gameLoop() {
+      if (!state.isRunning) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+
+      // Dark navy background
+      ctx.fillStyle = "#faf6ee";
+      ctx.fillRect(0, 0, width, height);
+
+      const t = state.audioElement.currentTime;
+      const duration = (state.selectedSong && state.selectedSong.duration_sec) || state.audioElement.duration || 1;
+
+      // Update bottom progress bar
+      const progFill = document.getElementById('arena-song-progress');
+      if (progFill && duration > 0) {
+        progFill.style.width = `${Math.min(100, (t / duration) * 100)}%`;
+      }
+
+      // Check if song has completed all charted notes
+      const notes = state.songData ? state.songData.notes : [];
+      if (notes && notes.length > 0) {
+        const lastNote = notes[notes.length - 1];
+        if (t >= lastNote.end + 1.2 && !state.audioElement.paused) {
+          stopBattle();
+          return;
+        }
+      }
+
+      // 1. Process real-time pitch for each connected player
+      processPlayerAudio(t);
+
+      // 2. Draw pitch grid
+      drawPitchGrid(width, height);
+
+      // 3. Draw vertical cyan hit line
+      drawHitLine(height);
+
+      // 4. Draw scrolling notes & update top lyric
+      drawNotes(t, width, height);
+
+      // 5. Draw live player cursors & handle scoring
+      drawPlayerCursors(height, t);
+
+      // 6. Draw Popcorn 3...2...1 countdown overlay
+      drawPopcornCountdownBanner(width, height, t);
+
+      // 7. Floating particles
+      updateAndDrawParticles();
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Pitch detection per player per frame
+    function processPlayerAudio(t) {
+      const ac = getAC();
+      const sr = ac.sampleRate;
+      let activeSingingCount = 0;
+      let highestRms = 0;
+
+      // Popcorn Turn Determination:
+      // Player 0 is active during 1st half (t < splitTime)
+      // Player 1 is active during 2nd half (t >= splitTime)
+      const isPopcornTwoPlayer = state.mode === 'popcorn' && state.players.length > 1;
+      const isFirstHalf = t < state.popcorn.splitTime;
+
+      state.players.forEach((p, pIdx) => {
+        let midi = null;
+        let rms = 0;
+
+        // In 2-player popcorn, suppress and mute the off-turn player
+        const isMuted = isPopcornTwoPlayer && (
+          (isFirstHalf && pIdx !== 0) || (!isFirstHalf && pIdx !== 1)
+        );
+        p.isMuted = isMuted;
+
+        if (isMuted) {
+          // Off-turn player is completely muted / suppressed
+          p.sungMidi = null;
+          p.rms = 0;
+          p.isSinging = false;
+          return;
+        }
+
+        if (state.keyboardMidi != null && p.type === 'laptop') {
+          midi = state.keyboardMidi;
+          rms = 0.5;
+        } else if (p.analyser) {
+          p.analyser.getFloatTimeDomainData(p.analyser.buffer);
+          const f = yin(p.analyser.buffer, sr);
+          
+          let sumSq = 0;
+          for (let i = 0; i < p.analyser.buffer.length; i++) sumSq += p.analyser.buffer[i] * p.analyser.buffer[i];
+          rms = Math.sqrt(sumSq / p.analyser.buffer.length);
+
+          if (f > 0 && rms >= 0.005) {
+            midi = 69 + 12 * Math.log2(f / 440);
+          }
+        }
+
+        p.sungMidi = midi;
+        p.rms = rms;
+        p.isSinging = midi !== null;
+        if (p.isSinging) activeSingingCount++;
+        if (rms > highestRms) highestRms = rms;
+      });
+
+      // Update Top Tuner & Mic Level Meter (only reflects currently active unmute singer)
+      const activePlayer = state.players.find(p => p.isSinging && !p.isMuted) || state.players.find(p => !p.isMuted) || state.players[0];
+      const micBar = document.getElementById('arena-mic-bar');
+      const micPct = document.getElementById('arena-mic-pct');
+      const pct = Math.min(100, Math.round(highestRms * 500));
+      if (micBar && micPct) {
+        micBar.style.width = `${pct}%`;
+        micPct.textContent = `${pct}%`;
+      }
+
+      const tunerPitch = document.getElementById('arena-pitch-name');
+      const tunerNeedle = document.getElementById('arena-tuner-needle');
+      const tunerSub = document.getElementById('arena-tuner-subtext');
+
+      if (activePlayer && activePlayer.sungMidi) {
+        const m = activePlayer.sungMidi;
+        const noteName = midiToNoteName(m);
+        if (tunerPitch) tunerPitch.textContent = noteName;
+        
+        // Cent deviation
+        const noteRound = Math.round(m);
+        const cents = (m - noteRound) * 100;
+        const needlePos = Math.max(0, Math.min(100, 50 + cents));
+        if (tunerNeedle) tunerNeedle.style.left = `${needlePos}%`;
+        if (tunerSub) tunerSub.textContent = (Math.abs(cents) <= 25 ? 'Perfect!' : (cents > 0 ? 'Slightly sharp' : 'Slightly flat')) + ' (' + (cents > 0 ? '+' : '') + Math.round(cents) + '¢)';
+      } else {
+        if (tunerPitch) tunerPitch.textContent = '--';
+        if (tunerNeedle) tunerNeedle.style.left = '50%';
+        if (tunerSub) tunerSub.textContent = 'Sing into microphone';
+      }
+
+      // Update Turn Indicator Pill
+      const turnPill = document.getElementById('arena-turn-indicator');
+      if (turnPill) {
+        if (state.mode === 'popcorn' && state.players.length > 1) {
+          const isP1 = t < state.popcorn.splitTime;
+          const curSinger = isP1 ? state.popcorn.p1Name : state.popcorn.p2Name;
+          turnPill.textContent = `Turn: ${curSinger} (${isP1 ? '1st Half' : '2nd Half'})`;
+        } else if (state.mode === 'popcorn') {
+          turnPill.textContent = `Solo Performance: ${state.popcorn.p1Name}`;
+        } else {
+          turnPill.textContent = `Concurrent Mog Battle`;
+        }
+      }
+    }
+
+    // Grid coordinates
+    const MIN_MIDI = 53; // F3
+    const MAX_MIDI = 74; // D5
+    const MIDI_RANGE = MAX_MIDI - MIN_MIDI;
+
+    function midiToY(midi, height) {
+      let m = midi;
+      while (m < MIN_MIDI) m += 12;
+      while (m > MAX_MIDI) m -= 12;
+      const norm = (m - MIN_MIDI) / MIDI_RANGE;
+      return height - (norm * (height - 60)) - 30;
+    }
+
+    function drawPitchGrid(width, height) {
+      ctx.strokeStyle = "#e7dfd5";
+      ctx.lineWidth = 1;
+      ctx.fillStyle = "#44403c";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "alphabetic";
+      ctx.font = "600 11px 'Space Grotesk', system-ui";
+
+      const keyNotes = [57, 60, 62, 64, 65, 67, 69, 72];
+      keyNotes.forEach(m => {
+        const y = midiToY(m, height);
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+        ctx.fillText(midiToNoteName(m), 18, y + 4);
+      });
+    }
+
+    function drawHitLine(height) {
+      const x = state.hitLineX;
+      ctx.save();
+      ctx.strokeStyle = "#ea580c";
+      ctx.lineWidth = 2.5;
+      ctx.shadowColor = "rgba(234, 88, 12, 0.45)";
+      ctx.shadowBlur = 10;
+
+      ctx.beginPath();
+      ctx.moveTo(x, 20);
+      ctx.lineTo(x, height - 20);
+      ctx.stroke();
+
+      ctx.fillStyle = "#ea580c";
+      ctx.beginPath();
+      ctx.arc(x, 20, 4, 0, Math.PI * 2);
+      ctx.arc(x, height - 20, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawNotes(t, width, height) {
+      const notes = (state.songData && state.songData.notes) || [];
+      const pxPerSec = state.pxPerSec;
+      const hitX = state.hitLineX;
+      let activeFound = false;
+
+      notes.forEach((note, idx) => {
+        const startX = hitX + (note.start - t) * pxPerSec;
+        const noteWidth = Math.max(34, (note.end - note.start) * pxPerSec);
+        const endX = startX + noteWidth;
+
+        if (endX < 0 || startX > width + 100) return;
+
+        const y = midiToY(note.midi, height);
+        const pillHeight = 26;
+        const pillY = y - pillHeight / 2;
+
+        const isPassed = note.end < t;
+        const isActive = note.start <= t && t <= note.end;
+
+        // Bottom syllable strip update
+        const sylEl = document.getElementById(`syl-${idx}`);
+        if (sylEl) {
+          if (isActive) {
+            activeFound = true;
+            sylEl.className = "syllable-item active";
+            const lyricWord = note.text || note.lyric || "";
+            if (lyricWord) document.getElementById("arena-active-lyric").textContent = `“${lyricWord}”`;
+          } else if (isPassed) {
+            sylEl.className = "syllable-item passed";
+          } else {
+            sylEl.className = "syllable-item";
+          }
+        }
+
+        ctx.save();
+        const r = pillHeight / 2;
+        ctx.beginPath();
+        ctx.roundRect(startX, pillY, noteWidth, pillHeight, [r]);
+
+        if (isActive) {
+          // Glowing Gold Active Pill
+          ctx.fillStyle = "#ea580c";
+          ctx.shadowColor = "rgba(234, 88, 12, 0.55)";
+          ctx.shadowBlur = 18;
+          ctx.fill();
+          ctx.strokeStyle = "#f97316";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          ctx.fillStyle = "#ffffff";
+          ctx.font = "700 13px 'Plus Jakarta Sans', system-ui, sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(note.text || note.lyric || "", startX + noteWidth / 2, y);
+
+        } else if (isPassed) {
+          // Muted Passed Pill
+          ctx.fillStyle = "rgba(68, 64, 60, 0.10)";
+          ctx.fill();
+          ctx.strokeStyle = "rgba(68, 64, 60, 0.12)";
+          ctx.lineWidth = 1;
+          ctx.stroke();
+
+          ctx.fillStyle = "rgba(68, 64, 60, 0.55)";
+          ctx.font = "500 12px 'Plus Jakarta Sans', system-ui, sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(note.text || note.lyric || "", startX + noteWidth / 2, y);
+
+        } else {
+          // Future Note Pill: Popcorn color coding (Cyan for Half 0, Magenta for Half 1)
+          let fill = "rgba(68, 64, 60, 0.14)", stroke = "#8e7166", shadow = "rgba(24, 20, 17, 0.12)", txt = "#292524";
+          if (state.mode === 'popcorn' && state.players.length > 1) {
+            if (note.half_idx === 0) {
+              fill = "rgba(234, 88, 12, 0.16)"; stroke = "#c2410c"; shadow = "rgba(234, 88, 12, 0.18)"; txt = "#7f2b00";
+            } else {
+              fill = "rgba(0, 105, 71, 0.14)"; stroke = "#006947"; shadow = "rgba(0, 105, 71, 0.18)"; txt = "#005236";
+            }
+          }
+
+          ctx.fillStyle = fill;
+          ctx.shadowColor = shadow;
+          ctx.shadowBlur = 10;
+          ctx.fill();
+          ctx.strokeStyle = stroke;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          ctx.fillStyle = txt;
+          ctx.font = "600 12px 'Plus Jakarta Sans', system-ui, sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(note.text || note.lyric || "", startX + noteWidth / 2, y);
+        }
+
+        ctx.restore();
+      });
+
+      if (!activeFound && t > 2.0) {
+        document.getElementById("arena-active-lyric").textContent = "♪ Instrumental break ♪";
+      }
+    }
+
+    // Player cursors & Scoring
+    function drawPlayerCursors(height, t) {
+      const hitX = state.hitLineX;
+      const notes = (state.songData && state.songData.notes) || [];
+      const activeNote = notes.find(n => t >= n.start - 0.05 && t <= n.end + 0.05);
+
+      state.players.forEach((p, pIdx) => {
+        // Popcorn mode check: is it this player's turn?
+        let isEligible = true;
+        if (state.mode === 'popcorn' && state.players.length > 1) {
+          const isFirstHalf = t < state.popcorn.splitTime;
+          isEligible = (isFirstHalf && pIdx === 0) || (!isFirstHalf && pIdx === 1);
+        }
+
+        if (!p.isSinging || !p.sungMidi) return;
+
+        const targetMidi = activeNote ? activeNote.midi : 65;
+        const disp = p.sungMidi + 12 * Math.round((targetMidi - p.sungMidi) / 12);
+
+        let dist = 99;
+        if (activeNote) {
+          dist = Math.abs(((p.sungMidi - activeNote.midi) % 12 + 12) % 12);
+          dist = Math.min(dist, 12 - dist);
+        }
+
+        const inTune = dist <= 0.75;
+
+        // Smooth cursor
+        const targetY = midiToY(disp, height);
+        if (p.curY === undefined || isNaN(p.curY)) {
+          p.curY = targetY;
+        } else {
+          p.curY += (targetY - p.curY) * 0.4;
+        }
+
+        // Scoring: only increment points if it's the player's active turn
+        if (activeNote && isEligible) {
+          p.totalNotes++;
+          if (inTune) {
+            p.combo++;
+            p.maxCombo = Math.max(p.maxCombo, p.combo);
+            const isPerfect = dist <= 0.35;
+            if (isPerfect) p.hitsPerfect++; else p.hitsGood++;
+            const mult = p.combo >= 30 ? 3 : p.combo >= 15 ? 2 : p.combo >= 5 ? 1.5 : 1;
+            p.score += Math.round((isPerfect ? 100 : 50) * mult);
+
+            if (Math.random() < 0.2) {
+              spawnParticle(hitX, p.curY, isPerfect ? "PERFECT! +100" : "GOOD! +50", "#10b981");
+            }
+          } else {
+            p.combo = 0;
+            p.misses++;
+          }
+        }
+
+        // Render voice cursor orb
+        ctx.save();
+        const orbColor = inTune ? "#10b981" : "#ef4444";
+        ctx.shadowColor = orbColor;
+        ctx.shadowBlur = 16;
+        ctx.fillStyle = orbColor;
+        ctx.beginPath();
+        ctx.arc(hitX, p.curY, 9, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = "#faf6ee";
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = "#181411";
+        ctx.font = "700 11px 'Space Grotesk', system-ui";
+        ctx.textAlign = "left";
+        const tag = p.isMuted ? ' (MUTED)' : ` (${p.score} pts)`;
+        ctx.fillText(`${p.name}${tag}`, hitX + 16, p.curY + 4);
+        ctx.restore();
+      });
+    }
+
+    // Popcorn 3...2...1 Transition Warning Banner
+    function drawPopcornCountdownBanner(width, height, t) {
+      if (state.mode !== 'popcorn' || state.players.length <= 1) return;
+
+      const splitT = state.popcorn.splitTime;
+      const timeToSwitch = splitT - t;
+
+      // 1. Warning Window: 3.5s countdown leading to transition
+      if (timeToSwitch > 0 && timeToSwitch <= 3.5) {
+        const count = Math.min(3, Math.max(1, Math.ceil(timeToSwitch)));
+        const endingUser = state.popcorn.p1Name;
+        const startingUser = state.popcorn.p2Name;
+
+        ctx.save();
+        const bannerW = Math.min(540, width - 40);
+        const bannerH = 76;
+        const bannerX = (width - bannerW) / 2;
+        const bannerY = 24;
+
+        ctx.fillStyle = "rgba(251, 248, 242, 0.94)";
+        ctx.strokeStyle = "#ea580c";
+        ctx.lineWidth = 2;
+        ctx.shadowColor = "rgba(24, 20, 17, 0.18)";
+        ctx.shadowBlur = 24;
+        ctx.beginPath();
+        ctx.roundRect(bannerX, bannerY, bannerW, bannerH, [16]);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = "#ea580c";
+        ctx.font = "700 40px 'Playfair Display', serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(`${count}`, bannerX + 44, bannerY + bannerH / 2);
+
+        ctx.fillStyle = "#181411";
+        ctx.font = "700 14px 'Space Grotesk', sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText(`TURN ENDING FOR: ${endingUser}`.toUpperCase(), bannerX + 80, bannerY + 26);
+
+        ctx.fillStyle = "#006947";
+        ctx.font = "600 13px 'Plus Jakarta Sans', sans-serif";
+        ctx.fillText(`${startingUser}, get ready to sing in ${count}…`, bannerX + 80, bannerY + 50);
+
+        ctx.restore();
+      }
+      // 2. Switched Alert Window: First 3 seconds of Player 2's half
+      else if (t >= splitT && t <= splitT + 3.0) {
+        const startingUser = state.popcorn.p2Name;
+        ctx.save();
+        const bannerW = Math.min(500, width - 40);
+        const bannerH = 64;
+        const bannerX = (width - bannerW) / 2;
+        const bannerY = 24;
+
+        ctx.fillStyle = "rgba(251, 248, 242, 0.94)";
+        ctx.strokeStyle = "#10b981";
+        ctx.lineWidth = 2;
+        ctx.shadowColor = "rgba(16, 185, 129, 0.5)";
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.roundRect(bannerX, bannerY, bannerW, bannerH, [16]);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = "#006947";
+        ctx.font = "italic 600 24px 'Playfair Display', serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(`${startingUser}, your turn! Sing now!`, width / 2, bannerY + bannerH / 2);
+        ctx.restore();
+      }
+    }
+
+    // Particles
+    function spawnParticle(x, y, text, color) {
+      state.particles.push({ x, y, text, color, vy: -1.2, alpha: 1.0 });
+    }
+
+    function updateAndDrawParticles() {
+      for (let i = state.particles.length - 1; i >= 0; i--) {
+        const p = state.particles[i];
+        p.y += p.vy;
+        p.alpha -= 0.03;
+        if (p.alpha <= 0) {
+          state.particles.splice(i, 1);
+          continue;
+        }
+        ctx.save();
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.alpha;
+        ctx.font = "700 12px 'Space Grotesk', system-ui";
+        ctx.textAlign = "center";
+        ctx.fillText(p.text, p.x, p.y);
+        ctx.restore();
+      }
+    }
+  </script>
+
+</body>
+</html>
