@@ -1,3 +1,5 @@
+Throwback to GSU’s Hacklanta! 48 hours of coding on just 4–8 hours of sleep. This project was built alongside my teammates Trang Dinh, Melvin Dacanay, and Connor Tran.
+
 # Hacklanta 26: Song Pipelines & Pitch Battle
 
 This workspace contains the Musiggle karaoke player, its FastAPI server, and an offline song analysis pipeline. The host screen lives in the root `index.html` and is copied to `pitch_battle/static/index.html` for the FastAPI app. Both launch paths use ngrok for secure phone pairing.
